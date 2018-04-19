@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="var" path="USER_HOME/Downloads/lib/jars/lwjgl.jar"/>
+	<classpathentry kind="var" path="USER_HOME/Downloads/lib/jars/lwjgl_util.jar"/>
+	<classpathentry kind="var" path="USER_HOME/Downloads/slick-util.jar"/>
+	<classpathentry kind="output" path="out/production/ski_game"/>
+</classpath>
