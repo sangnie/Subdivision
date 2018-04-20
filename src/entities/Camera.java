@@ -16,6 +16,9 @@ public class Camera {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)){
 			position.z-=0.2f;
 		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_S)){
+			position.z+=0.2f;
+		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)){
 			position.x+=0.2f;
 		}
@@ -27,6 +30,9 @@ public class Camera {
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
 			position.y-=0.2f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+			yaw-=0.2f;
 		}
 	}
 

@@ -28,10 +28,12 @@ public class MainGameLoop {
 		Loader loader = new Loader();
 		
 		
-		RawModel model = OBJLoader.loadObjModel("icsp", loader);
+//		RawModel model = OBJLoader.loadObjModel("icsp", loader);
+		RawModel model = OBJLoader.loadObjModel("newcube", loader);
 		
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("cloth")));
-		
+//		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("cloth")));
+		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("orange")));
+
 		List<Entity> entities = new ArrayList<Entity>();
 		Random random = new Random();
 //		for(int i=0;i<500;i++){
