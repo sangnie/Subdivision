@@ -213,4 +213,55 @@ public class Mesh {
         }
     }
 
+    public void splitFaces(Mesh m){
+
+        ArrayList<HalfFace> new_faces = new ArrayList<>();
+
+        for (HalfFace face:m.faces){
+            HalfEdge e0 = face.edge;
+            HalfEdge e_prev = e0;
+            while(e_prev.next != e0){
+                e_prev = e_prev.next;
+            }
+
+            HalfEdge outer1=null, outer2=null, outer3=null;
+
+            do{
+                HalfEdge e = e0.next;
+                HalfEdge e0_next = e0.next;
+
+                HalfFace f = new HalfFace(new_faces.size(),null, e0);
+                new_faces.add(f);
+                e0.face = f;
+                e.face = f;
+
+                HalfEdge new_e = new HalfEdge(m.edges.size(),e_prev.vertex,null,f,e0,e_prev.texture);
+                m.edges.add(new_e);
+                e.next = new_e;
+
+                if (outer1==null) outer1 = new_e;
+                else if(outer2==null) outer2 = new_e;
+                else outer3 = new_e;
+
+                e_prev = e;
+                e0 = e0.next;
+            } while (e0 != face.edge);
+
+            //CREATE INNER FACE
+            HalfFace f = new HalfFace(new_faces.size(),null,null);
+            new_faces.add(f);
+//            HalfEdge inner1 = new HalfEdge();
+//            HalfEdge inner2 = new HalfEdge();
+//            HalfEdge inner3 = new HalfEdge();
+            int eSize = m.edges.size();
+            HalfEdge inner3 = new HalfEdge(eSize+2,outer1.vertex,outer3,f,null,outer1.texture);
+            HalfEdge inner2 = new HalfEdge(eSize+1,outer3.vertex,outer2,f,inner3,outer3.texture);
+            HalfEdge inner1 = new HalfEdge(eSize,outer2.vertex,outer1,f,inner2,outer2.texture);
+            inner3.next = inner1;
+            m.edges.add(inner1);
+            m.edges.add(inner2);
+            m.edges.add(inner3);
+            f.edge = inner3;
+        }
+    }
 }
