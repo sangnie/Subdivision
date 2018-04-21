@@ -19,4 +19,6 @@ public class HalfEdge {
         this.next = next;
         this.texture = texture;
     }
+
+    public HalfEdge(){}
 }

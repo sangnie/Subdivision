@@ -13,4 +13,6 @@ public class HalfFace {
         this.normal = normal;
         this.edge = edge;
     }
+
+    public HalfFace(){}
 }

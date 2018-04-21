@@ -16,4 +16,6 @@ public class HalfVertex {
         this.posn = vertex;
         this.edge = e;
     }
+
+    public HalfVertex(){}
 }
