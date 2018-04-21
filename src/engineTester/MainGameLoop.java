@@ -50,7 +50,7 @@ public class MainGameLoop {
         MasterRenderer renderer = new MasterRenderer();
 
         Mesh mesh = new Mesh();
-        mesh.loadFromFile("cube");
+        mesh.loadFromFile("hua");
         RawModel meshModel = mesh.loadObjModel(loader);
         TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
         entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
