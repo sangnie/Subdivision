@@ -24,7 +24,7 @@ import entities.Light;
 
 public class MainGameLoop {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
@@ -53,7 +53,7 @@ public class MainGameLoop {
         Mesh mesh = new Mesh();
 //        mesh.loadFromFile("hua2");
 		mesh.loadFromFile("cube");
-		Mesh.subdivide(mesh);
+//		Mesh.subdivide(mesh);
 		RawModel meshModel = mesh.loadObjModel(loader);
         TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
         entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
@@ -62,14 +62,15 @@ public class MainGameLoop {
 		while(!Display.isCloseRequested()){
 			camera.move();
 
-//			if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-//			{
-//				Mesh.subdivide(mesh);
-//				meshModel = mesh.loadObjModel(loader);
-//				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
-//				entities.clear();
-//				entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
-//			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+			{
+				Mesh.subdivide(mesh);
+				meshModel = mesh.loadObjModel(loader);
+				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
+				entities.clear();
+				entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
+				Thread.sleep(100);
+			}
 
 //			renderer.processTerrain(terrain);
 //			renderer.processTerrain(terrain2);

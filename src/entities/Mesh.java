@@ -211,14 +211,14 @@ public class Mesh {
         for(HalfFace face:faces){
             HalfEdge e = face.edge;
             Vector3f e1 = new Vector3f();
-            System.out.println(e.id);
-            System.out.println(e.vertex.id);
-            System.out.println(e.vertex.posn);
-            System.out.println(e.next.id);
-            System.out.println(e.next.vertex.id);
-            System.out.println(e.next.vertex.posn);
+//            System.out.println(e.id);
+//            System.out.println(e.vertex.id);
+//            System.out.println(e.vertex.posn);
+//            System.out.println(e.next.id);
+//            System.out.println(e.next.vertex.id);
+//            System.out.println(e.next.vertex.posn);
             Vector3f.sub(e.vertex.posn, e.next.vertex.posn,e1);
-            System.out.println("YAY");
+//            System.out.println("YAY");
             e = e.next;
             Vector3f e2 = new Vector3f();
             Vector3f.sub(e.vertex.posn, e.next.vertex.posn,e2);
@@ -335,17 +335,20 @@ public class Mesh {
 
             for(int j = 0 ; j < neighbours.size() ; j++)
             {
-                Vector3f temp = neighbours.get(j);
-                temp.x = beta*temp.x;
-                temp.y = beta*temp.y;
-                temp.z = beta*temp.z;
+                Vector3f temp = new Vector3f();
+//                        = neighbours.get(j);
+                temp.x = beta*neighbours.get(j).x;
+                temp.y = beta*neighbours.get(j).y;
+                temp.z = beta*neighbours.get(j).z;
                 Vector3f.add(v.posn,temp,v.posn);
 
-                Vector2f temp2 = textures.get(j);
-                temp2.x = beta*temp2.x;
-                temp2.y = beta*temp2.y;
+                Vector2f temp2 = new Vector2f();
+//                        textures.get(j);
+                temp2.x = beta*textures.get(j).x;
+                temp2.y = beta*textures.get(j).y;
                 Vector2f.add(v.edge.texture,temp2,v.edge.texture);
             }
+            System.out.println("&&&" + v.posn);
         }
     }
 
@@ -420,6 +423,7 @@ public class Mesh {
                 }
                 else
                 {
+                    System.out.println("SHOULD NOT BE HERE");
                     Vector3f.add(v_start.posn,v_end.posn,midpoint.posn);
                     midpoint.posn.x *= 0.5f;
                     midpoint.posn.y *= 0.5f;
