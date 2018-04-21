@@ -9,10 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javafx.util.Pair;
 import renderEngine.Loader;
@@ -264,4 +261,80 @@ public class Mesh {
             f.edge = inner3;
         }
     }
+
+    public void subdivideEdges(Mesh m)
+    {
+        Set<Integer> split_edges = null;
+        int evenedges = m.edges.size();
+        for(int i = 0 ; i < evenedges ; i++)
+        {
+            HalfEdge e_split = m.edges.get(i);
+            HalfEdge e_prev = e_split;
+            while(e_prev.next != e_split)
+                e_prev = e_prev.next;
+
+            HalfVertex v_start = e_prev.vertex;
+            HalfVertex v_end = e_split.vertex;
+
+            HalfEdge e = new HalfEdge();
+            e.id = m.edges.size();
+            e.face = e_split.face;
+
+            e.next = e_split;
+            e_prev.next = e;
+
+            if(e_split.pair == null || !split_edges.contains(e_split.pair.id))
+            {
+                HalfVertex midpoint = new HalfVertex();
+                midpoint.id = m.vertices.size();
+
+                if(e_split.pair != null)
+                {
+                    HalfVertex opp1 = edges.get(e_split.id).next.vertex;
+                    HalfVertex opp2 = edges.get(e_split.id).pair.next.vertex;
+                    Vector3f pos1 = (Vector3f.add(v_start.posn,v_end.posn,null));
+                    pos1.x = 3.0f*pos1.x/8.0f;
+                    pos1.y = 3.0f*pos1.y/8.0f;
+                    pos1.z = 3.0f*pos1.z/8.0f;
+                    Vector3f pos2 = (Vector3f.add(opp1.posn,opp2.posn,null));
+                    pos2.x = 1.0f*pos2.x/8.0f;
+                    pos2.y = 1.0f*pos2.y/8.0f;
+                    pos2.z = 1.0f*pos2.z/8.0f;
+                    Vector3f.add(pos1,pos2,midpoint.posn);
+                }
+                else
+                {
+                    Vector3f.add(v_start.posn,v_end.posn,midpoint.posn);
+                    midpoint.posn.x *= 0.5f;
+                    midpoint.posn.y *= 0.5f;
+                    midpoint.posn.z *= 0.5f;
+                }
+
+                e.vertex = midpoint;
+                midpoint.edge = e;
+                m.vertices.add(midpoint);
+            }
+            else
+            {
+                HalfEdge old_pair = m.edges.get(e_split.pair.id);
+
+                HalfEdge pair_prev = old_pair;
+                while(pair_prev.next != old_pair)
+                    pair_prev = pair_prev.next;
+
+                e_split.pair = pair_prev;
+                pair_prev.pair = e_split;
+
+                e.vertex = pair_prev.vertex;
+
+                old_pair.pair = e;
+                e.pair = old_pair;
+
+            }
+
+            m.edges.add(e);
+            split_edges.add(e_split.id);
+        }
+    }
+
 }
