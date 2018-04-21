@@ -17,5 +17,8 @@ public class HalfVertex {
         this.edge = e;
     }
 
-    public HalfVertex(){}
+    public HalfVertex()
+    {
+        posn = new Vector3f();
+    }
 }

@@ -14,6 +14,8 @@ import java.util.*;
 import javafx.util.Pair;
 import renderEngine.Loader;
 
+import javax.swing.*;
+
 public class Mesh {
 
     public ArrayList<HalfEdge> edges;
@@ -102,9 +104,13 @@ public class Mesh {
                 edges.add(e2);
                 edges.add(e1);
 
-                v1.edge = e1;
-                v2.edge = e2;
-                v3.edge = e3;
+//                v1.edge = e1;
+//                v2.edge = e2;
+//                v3.edge = e3;
+
+                v1.edge = e3;
+                v2.edge = e1;
+                v3.edge = e2;
 
                 halfedges.put(new Pair<>(vid1,vid2),e1);
                 halfedges.put(new Pair<>(vid2,vid3),e2);
@@ -157,6 +163,7 @@ public class Mesh {
     public RawModel loadObjModel(Loader loader) {
 
         int numFaces = faces.size();
+        calculateNormals();
 
         float[] verticesArray = new float[numFaces*3*3];
         float[] normalsArray = new float[numFaces*3*3];
@@ -200,17 +207,53 @@ public class Mesh {
         return loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray);
     }
 
-    public void subdivide(){
-
-    }
-
-    public void subdivide(int number){
-        for (int i = 0; i < number; i++) {
-            subdivide();
+    public void calculateNormals(){
+        for(HalfFace face:faces){
+            HalfEdge e = face.edge;
+            Vector3f e1 = new Vector3f();
+            System.out.println(e.id);
+            System.out.println(e.vertex.id);
+            System.out.println(e.vertex.posn);
+            System.out.println(e.next.id);
+            System.out.println(e.next.vertex.id);
+            System.out.println(e.next.vertex.posn);
+            Vector3f.sub(e.vertex.posn, e.next.vertex.posn,e1);
+            System.out.println("YAY");
+            e = e.next;
+            Vector3f e2 = new Vector3f();
+            Vector3f.sub(e.vertex.posn, e.next.vertex.posn,e2);
+            face.normal = Vector3f.cross(e1,e2,face.normal);
+//            System.out.println(face.normal);
+            face.normal.normalise();
+//            System.out.println(e1);
+//            System.out.println(e2);
+//            System.out.println(face.normal);
         }
     }
 
-    public void splitFaces(Mesh m){
+    public static void subdivide(Mesh m){
+
+        int evenverts = m.vertices.size();
+        System.out.println("@@@@@@@@@@@@@@@@@");
+
+        subdivideEdges(m);
+        System.out.println("@@@@@@@@@@@@@@@@@");
+
+        updateOriginal(m,evenverts);
+        System.out.println("@@@@@@@@@@@@@@@@@");
+
+        splitFaces(m);
+
+        System.out.println("@@@@@@@@@@@@@@@@@");
+    }
+
+//    public void subdivide(int number){
+//        for (int i = 0; i < number; i++) {
+//            subdivide();
+//        }
+//    }
+
+    public static void splitFaces(Mesh m){
 
         ArrayList<HalfFace> new_faces = new ArrayList<>();
 
@@ -225,7 +268,7 @@ public class Mesh {
 
             do{
                 HalfEdge e = e0.next;
-                HalfEdge e0_next = e0.next;
+                HalfEdge e0_next = e.next;
 
                 HalfFace f = new HalfFace(new_faces.size(),null, e0);
                 new_faces.add(f);
@@ -241,7 +284,7 @@ public class Mesh {
                 else outer3 = new_e;
 
                 e_prev = e;
-                e0 = e0.next;
+                e0 = e0_next;
             } while (e0 != face.edge);
 
             //CREATE INNER FACE
@@ -260,12 +303,58 @@ public class Mesh {
             m.edges.add(inner3);
             f.edge = inner3;
         }
+        m.faces = new_faces;
     }
 
-    public void subdivideEdges(Mesh m)
+    public static void updateOriginal(Mesh m, int evenverts)
     {
-        Set<Integer> split_edges = null;
+        for(int i = 0 ; i < evenverts ; i++)
+        {
+            HalfVertex v = m.vertices.get(i);
+            ArrayList<Vector3f> neighbours = new ArrayList<Vector3f>();
+            ArrayList<Vector2f> textures = new ArrayList<Vector2f>();
+            HalfEdge e0 = v.edge;
+            HalfEdge e = e0;
+            do {
+                textures.add(e.pair.next.texture);
+                neighbours.add(e.pair.next.vertex.posn);
+                e = e.next.pair;
+            }while (e != e0);
+            int n = neighbours.size();
+            float beta;
+            if(n == 3)
+                beta = 3.0f / 16.0f;
+            else
+                beta = 3.0f / (8.0f * n);
+            v.posn.x = (1.0f - n*beta)*v.posn.x;
+            v.posn.y = (1.0f - n*beta)*v.posn.y;
+            v.posn.z = (1.0f - n*beta)*v.posn.z;
+
+            v.edge.texture.x = (1.0f - n*beta)*v.edge.texture.x;
+            v.edge.texture.y = (1.0f - n*beta)*v.edge.texture.y;
+
+            for(int j = 0 ; j < neighbours.size() ; j++)
+            {
+                Vector3f temp = neighbours.get(j);
+                temp.x = beta*temp.x;
+                temp.y = beta*temp.y;
+                temp.z = beta*temp.z;
+                Vector3f.add(v.posn,temp,v.posn);
+
+                Vector2f temp2 = textures.get(j);
+                temp2.x = beta*temp2.x;
+                temp2.y = beta*temp2.y;
+                Vector2f.add(v.edge.texture,temp2,v.edge.texture);
+            }
+        }
+    }
+
+    public static void subdivideEdges(Mesh m)
+    {
+        ArrayList<Integer> split_edges = new ArrayList<Integer>();
+//        split_edges.add(-1);
         int evenedges = m.edges.size();
+        int evenvertices = m.vertices.size();
         for(int i = 0 ; i < evenedges ; i++)
         {
             HalfEdge e_split = m.edges.get(i);
@@ -287,20 +376,47 @@ public class Mesh {
             {
                 HalfVertex midpoint = new HalfVertex();
                 midpoint.id = m.vertices.size();
+                midpoint.edge = e;
 
                 if(e_split.pair != null)
                 {
-                    HalfVertex opp1 = edges.get(e_split.id).next.vertex;
-                    HalfVertex opp2 = edges.get(e_split.id).pair.next.vertex;
-                    Vector3f pos1 = (Vector3f.add(v_start.posn,v_end.posn,null));
+//                    HalfVertex opp1 = edges.get(e_split.id).next.vertex;
+//                    HalfVertex opp2 = edges.get(e_split.id).pair.next.vertex;
+                    HalfVertex opp1,opp2;
+                    if(e_split.next.vertex.id >= evenvertices) {
+                        opp1 = e_split.next.next.vertex;
+                    }
+                    else {
+                        opp1 = e_split.next.vertex;
+                    }
+                    if(e_split.pair.next.vertex.id >= evenvertices) {
+                        opp2 = e_split.pair.next.next.vertex;
+                    }
+                    else {
+                        opp2 = e_split.pair.next.vertex;
+                    }
+                    Vector3f pos1 = new Vector3f();
+                    Vector3f.add(v_start.posn,v_end.posn,pos1);
                     pos1.x = 3.0f*pos1.x/8.0f;
                     pos1.y = 3.0f*pos1.y/8.0f;
                     pos1.z = 3.0f*pos1.z/8.0f;
-                    Vector3f pos2 = (Vector3f.add(opp1.posn,opp2.posn,null));
+                    Vector3f pos2 = new Vector3f();
+                    Vector3f.add(opp1.posn,opp2.posn,pos2);
                     pos2.x = 1.0f*pos2.x/8.0f;
                     pos2.y = 1.0f*pos2.y/8.0f;
                     pos2.z = 1.0f*pos2.z/8.0f;
                     Vector3f.add(pos1,pos2,midpoint.posn);
+
+                    Vector2f tex1 = new Vector2f();
+                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,tex1);
+                    tex1.x = 3.0f*tex1.x/8.0f;
+                    tex1.y = 3.0f*tex1.y/8.0f;
+                    Vector2f tex2 = new Vector2f();
+                    Vector2f.add(opp1.edge.texture,opp2.edge.texture,tex2);
+                    tex2.x = 1.0f*tex2.x/8.0f;
+                    tex2.y = 1.0f*tex2.y/8.0f;
+                    Vector2f.add(tex1,tex2,midpoint.edge.texture);
+
                 }
                 else
                 {
@@ -308,10 +424,14 @@ public class Mesh {
                     midpoint.posn.x *= 0.5f;
                     midpoint.posn.y *= 0.5f;
                     midpoint.posn.z *= 0.5f;
+
+                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,midpoint.edge.texture);
+                    midpoint.edge.texture.x *= 0.5f;
+                    midpoint.edge.texture.y *= 0.5f;
                 }
 
                 e.vertex = midpoint;
-                midpoint.edge = e;
+                System.out.println("###" + midpoint.posn);
                 m.vertices.add(midpoint);
             }
             else
@@ -326,6 +446,7 @@ public class Mesh {
                 pair_prev.pair = e_split;
 
                 e.vertex = pair_prev.vertex;
+                e.texture = pair_prev.texture;
 
                 old_pair.pair = e;
                 e.pair = old_pair;

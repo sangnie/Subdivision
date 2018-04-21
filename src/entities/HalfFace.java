@@ -14,5 +14,7 @@ public class HalfFace {
         this.edge = edge;
     }
 
-    public HalfFace(){}
+    public HalfFace(){
+        normal = new Vector3f();
+    }
 }

@@ -20,5 +20,7 @@ public class HalfEdge {
         this.texture = texture;
     }
 
-    public HalfEdge(){}
+    public HalfEdge(){
+        texture = new Vector2f();
+    }
 }

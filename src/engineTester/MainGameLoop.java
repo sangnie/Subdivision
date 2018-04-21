@@ -8,6 +8,7 @@ import entities.Mesh;
 import models.RawModel;
 import models.TexturedModel;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -50,17 +51,30 @@ public class MainGameLoop {
         MasterRenderer renderer = new MasterRenderer();
 
         Mesh mesh = new Mesh();
-        mesh.loadFromFile("hua2");
-        RawModel meshModel = mesh.loadObjModel(loader);
+//        mesh.loadFromFile("hua2");
+		mesh.loadFromFile("cube");
+		Mesh.subdivide(mesh);
+		RawModel meshModel = mesh.loadObjModel(loader);
         TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
         entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
 //		System.out.println("Faces: " + mesh.faces.size() + );
 
 		while(!Display.isCloseRequested()){
 			camera.move();
-			
+
+//			if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+//			{
+//				Mesh.subdivide(mesh);
+//				meshModel = mesh.loadObjModel(loader);
+//				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
+//				entities.clear();
+//				entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
+//			}
+
 //			renderer.processTerrain(terrain);
 //			renderer.processTerrain(terrain2);
+
+
 			for(Entity entity:entities){
 				renderer.processEntity(entity);
 			}
