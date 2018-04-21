@@ -1,5 +1,7 @@
 package entities;
 
+import models.RawModel;
+import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -8,10 +10,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javafx.util.Pair;
+import renderEngine.Loader;
 
 public class Mesh {
 
@@ -19,9 +23,17 @@ public class Mesh {
     public ArrayList<HalfVertex> vertices;
     public ArrayList<HalfFace> faces;
 
+
+    public Mesh() {
+        edges = new ArrayList<>();
+        vertices = new ArrayList<>();
+        faces = new ArrayList<>();
+    }
+
     public void loadFromFile(String fileName)
     {
         FileReader fr = null;
+
         try {
             fr = new FileReader(new File("res/" + fileName + ".obj"));
         } catch (FileNotFoundException e) {
@@ -34,12 +46,9 @@ public class Mesh {
         List<Vector2f> textures = new ArrayList<Vector2f>();
         List<Vector3f> normals = new ArrayList<Vector3f>();
         List<Integer> indices = new ArrayList<Integer>();
-        float[] verticesArray = null;
-        float[] normalsArray = null;
-        float[] textureArray = null;
-        int[] indicesArray = null;
 
-        Map<Pair<Integer, Integer>, HalfEdge> halfedges = new Map<Pair<Integer, Integer>, HalfEdge>();
+
+        Map<Pair<Integer, Integer>, HalfEdge> halfedges = new HashMap<>();
         try {
 
             while (true) {
@@ -58,8 +67,8 @@ public class Mesh {
                             Float.parseFloat(currentLine[2]), Float.parseFloat(currentLine[3]));
                     normals.add(normal);
                 } else if (line.startsWith("f ")) {
-                    textureArray = new float[vertices.size() * 2];
-                    normalsArray = new float[vertices.size() * 3];
+//                    textureArray = new float[vertices.size() * 2];
+//                    normalsArray = new float[vertices.size() * 3];
                     break;
                 }
             }
@@ -74,17 +83,21 @@ public class Mesh {
                 String[] vertex2 = currentLine[2].split("/");
                 String[] vertex3 = currentLine[3].split("/");
 
-                HalfVertex v1 = vertices.get(Integer.parseInt(vertex1[0]) - 1);
-                HalfVertex v2 = vertices.get(Integer.parseInt(vertex2[0]) - 1);
-                HalfVertex v3 = vertices.get(Integer.parseInt(vertex3[0]) - 1);
+                int vid1 = Integer.parseInt(vertex1[0]) - 1;
+                int vid2 = Integer.parseInt(vertex2[0]) - 1;
+                int vid3 = Integer.parseInt(vertex3[0]) - 1;
+                HalfVertex v1 = vertices.get(vid1);
+                HalfVertex v2 = vertices.get(vid2);
+                HalfVertex v3 = vertices.get(vid3);
 
                 int lastEdge = edges.size();
-                HalfEdge e3 = new HalfEdge(lastEdge, v1, null, null,null);
+
+                HalfEdge e3 =new HalfEdge(lastEdge,v1,null,null,null,textures.get(Integer.parseInt(vertex1[1])-1));
                 Vector3f currentNorm = normals.get(Integer.parseInt(vertex1[2])-1);
                 HalfFace f = new HalfFace(faces.size(),currentNorm,e3);
                 faces.add(f);
-                HalfEdge e2 = new HalfEdge(lastEdge + 1, v3, null, f, e3);
-                HalfEdge e1 = new HalfEdge(lastEdge + 2, v2, null, f, e2);
+                HalfEdge e2 = new HalfEdge(lastEdge + 1, v3, null, f, e3,textures.get(Integer.parseInt(vertex3[1])-1));
+                HalfEdge e1 = new HalfEdge(lastEdge + 2, v2, null, f, e2,textures.get(Integer.parseInt(vertex2[1])-1));
                 e3.face = f;
                 e3.next = e1;
 
@@ -96,6 +109,26 @@ public class Mesh {
                 v2.edge = e2;
                 v3.edge = e3;
 
+                halfedges.put(new Pair<>(vid1,vid2),e1);
+                halfedges.put(new Pair<>(vid2,vid3),e2);
+                halfedges.put(new Pair<>(vid3,vid1),e3);
+
+                if(halfedges.containsKey(new Pair<>(vid2,vid1))){
+                    HalfEdge e1_ = halfedges.get(new Pair<>(vid2,vid1));
+                    e1.pair = e1_;
+                    e1_.pair = e1;
+                }
+                if(halfedges.containsKey(new Pair<>(vid3,vid2))){
+                    HalfEdge e2_ = halfedges.get(new Pair<>(vid3,vid2));
+                    e2.pair = e2_;
+                    e2_.pair = e2;
+                }
+                if(halfedges.containsKey(new Pair<>(vid1,vid3))){
+                    HalfEdge e3_ = halfedges.get(new Pair<>(vid1,vid3));
+                    e3.pair = e3_;
+                    e3_.pair = e3;
+                }
+
 //                processVertex(vertex1,indices,textures,normals,textureArray,normalsArray);
 //                processVertex(vertex2,indices,textures,normals,textureArray,normalsArray);
 //                processVertex(vertex3,indices,textures,normals,textureArray,normalsArray);
@@ -106,6 +139,8 @@ public class Mesh {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println("Faces: " + faces.size() + ", Vertices: " + vertices.size() + ", Edges: " + edges.size());
 
 //        verticesArray = new float[vertices.size()*3];
 //        indicesArray = new int[indices.size()];
@@ -122,21 +157,60 @@ public class Mesh {
 //        }
     }
 
-    private static void processVertex(String[] vertexData, List<Integer> indices,
-                                      List<Vector2f> textures, List<Vector3f> normals, float[] textureArray,
-                                      float[] normalsArray) {
-        int currentVertexPointer = Integer.parseInt(vertexData[0]) - 1;
-        indices.add(currentVertexPointer);
-        Vector2f currentTex = textures.get(Integer.parseInt(vertexData[1])-1);
-        textureArray[currentVertexPointer*2] = currentTex.x;
-        textureArray[currentVertexPointer*2+1] = 1 - currentTex.y;
-        Vector3f currentNorm = normals.get(Integer.parseInt(vertexData[2])-1);
-        normalsArray[currentVertexPointer*3] = currentNorm.x;
-        normalsArray[currentVertexPointer*3+1] = currentNorm.y;
-        normalsArray[currentVertexPointer*3+2] = currentNorm.z;
+    public RawModel loadObjModel(Loader loader) {
 
+        int numFaces = faces.size();
+
+        float[] verticesArray = new float[numFaces*3*3];
+        float[] normalsArray = new float[numFaces*3*3];
+        float[] textureArray = new float[numFaces*2*3];
+        int[] indicesArray = new int[numFaces*3];
+
+        int nf = 0;
+        int tf = 0;
+        for(HalfFace face:faces){
+//            HalfVertex v1 = face.edge.vertex;
+//            HalfVertex v2 = v1.edge.vertex;
+//            HalfVertex v3 = v2.edge.vertex;
+//
+//            verticesArray[nf] = v1.posn.x;
+//            verticesArray[nf+1] = v1.posn.x;
+//            verticesArray[nf+2] = v1.posn.x;
+
+//            for (int i = 0; i < 9; i++) {
+//                normalsArray[nf + i] = face.normal.x;
+//            }
+
+            HalfEdge edge = face.edge;
+            do {
+                // do something with edge
+                HalfVertex v = edge.vertex;
+                verticesArray[nf] = v.posn.x;
+                verticesArray[nf+1] = v.posn.y;
+                verticesArray[nf+2] = v.posn.z;
+                normalsArray[nf] = face.normal.x;
+                normalsArray[nf+1] = face.normal.y;
+                normalsArray[nf+2] = face.normal.z;
+                textureArray[tf] = edge.texture.x;
+                textureArray[tf+1] = edge.texture.y;
+                indicesArray[nf/3] = nf/3;
+                nf +=3;
+                tf +=2;
+                edge = edge.next;
+            } while (edge != face.edge);
+        }
+
+        return loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray);
+    }
+
+    public void subdivide(){
 
     }
 
+    public void subdivide(int number){
+        for (int i = 0; i < number; i++) {
+            subdivide();
+        }
+    }
 
 }
