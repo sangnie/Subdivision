@@ -55,7 +55,7 @@ public class MainGameLoop {
 		mesh.loadFromFile("cube");
 //		Mesh.subdivide(mesh);
 		RawModel meshModel = mesh.loadObjModel(loader);
-        TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
+        TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("orange")));
         entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
 //		System.out.println("Faces: " + mesh.faces.size() + );
 
@@ -66,10 +66,11 @@ public class MainGameLoop {
 			{
 				Mesh.subdivide(mesh);
 				meshModel = mesh.loadObjModel(loader);
-				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
+				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("orange")));
 				entities.clear();
 				entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
-				Thread.sleep(100);
+				System.out.println("Faces: " + mesh.faces.size() + ", Vertices: " + mesh.vertices.size() + ", Edges: " + mesh.edges.size());
+				Thread.sleep(1000);
 			}
 
 //			renderer.processTerrain(terrain);

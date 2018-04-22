@@ -245,6 +245,10 @@ public class Mesh {
         splitFaces(m);
 
         System.out.println("@@@@@@@@@@@@@@@@@");
+
+        updateOlds(m);
+
+        System.out.println("@@@@@@@@@@@@@@@@@");
     }
 
 //    public void subdivide(int number){
@@ -252,6 +256,14 @@ public class Mesh {
 //            subdivide();
 //        }
 //    }
+
+    public static void updateOlds(Mesh m)
+    {
+        for(HalfVertex vertex:m.vertices)
+            vertex.setOld_posn();
+        for(HalfEdge edge:m.edges)
+            edge.setOld_texture();
+    }
 
     public static void splitFaces(Mesh m){
 
@@ -297,6 +309,9 @@ public class Mesh {
             HalfEdge inner3 = new HalfEdge(eSize+2,outer1.vertex,outer3,f,null,outer1.texture);
             HalfEdge inner2 = new HalfEdge(eSize+1,outer3.vertex,outer2,f,inner3,outer3.texture);
             HalfEdge inner1 = new HalfEdge(eSize,outer2.vertex,outer1,f,inner2,outer2.texture);
+            outer1.pair = inner1;
+            outer2.pair = inner2;
+            outer3.pair = inner3;
             inner3.next = inner1;
             m.edges.add(inner1);
             m.edges.add(inner2);
@@ -316,8 +331,12 @@ public class Mesh {
             HalfEdge e0 = v.edge;
             HalfEdge e = e0;
             do {
-                textures.add(e.pair.next.texture);
-                neighbours.add(e.pair.next.vertex.posn);
+                textures.add(e.pair.next.old_texture);
+                neighbours.add(e.pair.next.vertex.old_posn);
+//                textures.add(e.pair.next.texture);
+//                neighbours.add(e.pair.next.vertex.posn);
+//                textures.add(e.pair.texture);
+//                neighbours.add(e.pair.vertex.posn);
                 e = e.next.pair;
             }while (e != e0);
             int n = neighbours.size();
@@ -326,12 +345,12 @@ public class Mesh {
                 beta = 3.0f / 16.0f;
             else
                 beta = 3.0f / (8.0f * n);
-            v.posn.x = (1.0f - n*beta)*v.posn.x;
-            v.posn.y = (1.0f - n*beta)*v.posn.y;
-            v.posn.z = (1.0f - n*beta)*v.posn.z;
+            v.posn.x = (1.0f - n*beta)*v.old_posn.x;
+            v.posn.y = (1.0f - n*beta)*v.old_posn.y;
+            v.posn.z = (1.0f - n*beta)*v.old_posn.z;
 
-            v.edge.texture.x = (1.0f - n*beta)*v.edge.texture.x;
-            v.edge.texture.y = (1.0f - n*beta)*v.edge.texture.y;
+            v.edge.texture.x = (1.0f - n*beta)*v.edge.old_texture.x;
+            v.edge.texture.y = (1.0f - n*beta)*v.edge.old_texture.y;
 
             for(int j = 0 ; j < neighbours.size() ; j++)
             {
@@ -435,6 +454,8 @@ public class Mesh {
                 }
 
                 e.vertex = midpoint;
+                midpoint.edge.setOld_texture();
+                midpoint.setOld_posn();
                 System.out.println("###" + midpoint.posn);
                 m.vertices.add(midpoint);
             }
