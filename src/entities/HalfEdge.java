@@ -33,4 +33,21 @@ public class HalfEdge {
         this.old_texture.x = this.texture.x;
         this.old_texture.y = this.texture.y;
     }
+
+    public HalfEdge previous() {
+        HalfEdge prev = next;
+        while(prev.next != this)
+            prev = prev.next;
+        return prev;
+    }
+
+    public HalfEdge rewind()
+    {
+        if(pair == null)
+            return this;
+        HalfEdge e = pair.previous();
+        while(e != this && e.pair != null)
+            e = e.pair.previous();
+        return e;
+    }
 }

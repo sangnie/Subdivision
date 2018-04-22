@@ -34,7 +34,7 @@ public class MainGameLoop {
 		RawModel model = OBJLoader.loadObjModel("cube", loader);
 		
 //		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("cloth")));
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("orange")));
+		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("snow2")));
 
         List<Entity> entities = new ArrayList<Entity>();
 //		entities.add(new Entity(staticModel, new Vector3f(5,5,5),0,0,0,3));
@@ -52,10 +52,10 @@ public class MainGameLoop {
 
         Mesh mesh = new Mesh();
 //        mesh.loadFromFile("hua2");
-		mesh.loadFromFile("cube");
+		mesh.loadFromFile("spaceship2");
 //		Mesh.subdivide(mesh);
 		RawModel meshModel = mesh.loadObjModel(loader);
-        TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("orange")));
+        TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
         entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
 //		System.out.println("Faces: " + mesh.faces.size() + );
 
@@ -66,7 +66,7 @@ public class MainGameLoop {
 			{
 				Mesh.subdivide(mesh);
 				meshModel = mesh.loadObjModel(loader);
-				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("orange")));
+				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
 				entities.clear();
 				entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
 				System.out.println("Faces: " + mesh.faces.size() + ", Vertices: " + mesh.vertices.size() + ", Edges: " + mesh.edges.size());

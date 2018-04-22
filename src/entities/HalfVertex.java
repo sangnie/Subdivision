@@ -33,4 +33,12 @@ public class HalfVertex {
         this.old_posn.y = this.posn.y;
         this.old_posn.z = this.posn.z;
     }
+
+    public boolean onBoundary() {
+        HalfEdge eloop = edge;
+        do {
+            eloop = eloop.next.pair;
+        }while(eloop != edge && eloop != null);
+        return  eloop == null;
+    }
 }

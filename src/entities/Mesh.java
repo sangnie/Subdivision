@@ -326,6 +326,40 @@ public class Mesh {
         for(int i = 0 ; i < evenverts ; i++)
         {
             HalfVertex v = m.vertices.get(i);
+
+            if(v.onBoundary())
+            {
+                HalfEdge e0 = v.edge.rewind();
+                HalfEdge e1 = e0.next;
+                while(e1.pair != null)
+                    e1 = e1.pair.next;
+
+                Vector3f temp_pos = new Vector3f();
+                temp_pos.x = 6.0f * v.old_posn.x;
+                temp_pos.y = 6.0f * v.old_posn.y;
+                temp_pos.z = 6.0f * v.old_posn.z;
+
+                Vector3f.add(temp_pos,e0.previous().previous().vertex.old_posn,temp_pos);
+                Vector3f.add(temp_pos,e1.previous().previous().vertex.old_posn,temp_pos);
+
+                v.posn.x = 0.125f * temp_pos.x;
+                v.posn.y = 0.125f * temp_pos.y;
+                v.posn.z = 0.125f * temp_pos.z;
+
+                Vector2f temp_text = new Vector2f();
+                temp_text.x = 6.0f * v.edge.old_texture.x;
+                temp_text.y = 6.0f * v.edge.old_texture.y;
+
+                Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
+                Vector2f.add(temp_text,e1.previous().previous().vertex.edge.old_texture,temp_text);
+
+                v.posn.x = 0.125f * temp_text.x;
+                v.posn.y = 0.125f * temp_text.y;
+
+                continue;
+            }
+
+
             ArrayList<Vector3f> neighbours = new ArrayList<Vector3f>();
             ArrayList<Vector2f> textures = new ArrayList<Vector2f>();
             HalfEdge e0 = v.edge;
