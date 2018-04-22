@@ -25,8 +25,9 @@ public class HalfEdge {
     }
 
     public HalfEdge(){
-        texture = new Vector2f();
-        old_texture = new Vector2f();
+        this.texture = new Vector2f();
+        this.old_texture = new Vector2f();
+        this.pair = null;
     }
 
     public void setOld_texture() {
@@ -41,6 +42,12 @@ public class HalfEdge {
         return prev;
     }
 
+    public HalfEdge previous2() {
+        HalfEdge prev = next;
+        while(prev.next.next != this)
+            prev = prev.next;
+        return prev;
+    }
     public HalfEdge rewind()
     {
         if(pair == null)

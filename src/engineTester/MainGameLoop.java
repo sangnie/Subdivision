@@ -52,6 +52,7 @@ public class MainGameLoop {
 
         Mesh mesh = new Mesh();
 //        mesh.loadFromFile("hua2");
+//		mesh.loadFromFile("hollow_cube");
 		mesh.loadFromFile("spaceship2");
 //		Mesh.subdivide(mesh);
 		RawModel meshModel = mesh.loadObjModel(loader);

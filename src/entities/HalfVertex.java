@@ -24,8 +24,8 @@ public class HalfVertex {
 
     public HalfVertex()
     {
-        posn = new Vector3f();
-        old_posn = new Vector3f();
+        this.posn = new Vector3f();
+        this.old_posn = new Vector3f();
     }
 
     public void setOld_posn() {

@@ -340,7 +340,11 @@ public class Mesh {
                 temp_pos.z = 6.0f * v.old_posn.z;
 
                 Vector3f.add(temp_pos,e0.previous().previous().vertex.old_posn,temp_pos);
-                Vector3f.add(temp_pos,e1.previous().previous().vertex.old_posn,temp_pos);
+                Vector3f.add(temp_pos,e1.next.vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e0.previous2().vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e0.previous().vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e1.vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e1.previous().previous().vertex.old_posn,temp_pos);
 
                 v.posn.x = 0.125f * temp_pos.x;
                 v.posn.y = 0.125f * temp_pos.y;
@@ -351,10 +355,10 @@ public class Mesh {
                 temp_text.y = 6.0f * v.edge.old_texture.y;
 
                 Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
-                Vector2f.add(temp_text,e1.previous().previous().vertex.edge.old_texture,temp_text);
+                Vector2f.add(temp_text,e1.next.vertex.edge.old_texture,temp_text);
 
-                v.posn.x = 0.125f * temp_text.x;
-                v.posn.y = 0.125f * temp_text.y;
+                v.edge.texture.x = 0.125f * temp_text.x;
+                v.edge.texture.y = 0.125f * temp_text.y;
 
                 continue;
             }
@@ -476,7 +480,7 @@ public class Mesh {
                 }
                 else
                 {
-                    System.out.println("SHOULD NOT BE HERE");
+                    System.out.println("Boundary Vertex");
                     Vector3f.add(v_start.posn,v_end.posn,midpoint.posn);
                     midpoint.posn.x *= 0.5f;
                     midpoint.posn.y *= 0.5f;
