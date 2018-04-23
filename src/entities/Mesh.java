@@ -118,16 +118,19 @@ public class Mesh {
 
                 if(halfedges.containsKey(new Pair<>(vid3,vid1))){
                     HalfEdge e1_ = halfedges.get(new Pair<>(vid3,vid1));
+                    halfedges.put(new Pair<>(vid3,vid1),e1_);
                     e1.pair = e1_;
                     e1_.pair = e1;
                 }
                 if(halfedges.containsKey(new Pair<>(vid1,vid2))){
                     HalfEdge e2_ = halfedges.get(new Pair<>(vid1,vid2));
+                    halfedges.put(new Pair<>(vid1,vid2),e2_);
                     e2.pair = e2_;
                     e2_.pair = e2;
                 }
                 if(halfedges.containsKey(new Pair<>(vid2,vid3))){
                     HalfEdge e3_ = halfedges.get(new Pair<>(vid2,vid3));
+                    halfedges.put(new Pair<>(vid2,vid3),e3_);
                     e3.pair = e3_;
                     e3_.pair = e3;
                 }
@@ -141,6 +144,15 @@ public class Mesh {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        int crease_list[] = {3,15,26,7,34,28,3};
+        for (int i = 0; i < crease_list.length - 1; i++) {
+            System.out.println(crease_list[i] + " " + crease_list[i+1]);
+//            System.out.println(halfedges.containsKey(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)));
+//            System.out.println(halfedges.containsKey(new Pair<>(crease_list[i+1],crease_list[i])));
+            halfedges.get(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)).crease = true;
+            halfedges.get(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)).pair.crease = true;
         }
 
         System.out.println("Faces: " + faces.size() + ", Vertices: " + vertices.size() + ", Edges: " + edges.size());
