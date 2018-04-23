@@ -91,43 +91,43 @@ public class Mesh {
 
                 int lastEdge = edges.size();
 
-                HalfEdge e3 =new HalfEdge(lastEdge,v1,null,null,null,textures.get(Integer.parseInt(vertex1[1])-1));
+                HalfEdge e1 =new HalfEdge(lastEdge,v1,null,null,null,textures.get(Integer.parseInt(vertex1[1])-1));
                 Vector3f currentNorm = normals.get(Integer.parseInt(vertex1[2])-1);
-                HalfFace f = new HalfFace(faces.size(),currentNorm,e3);
+                HalfFace f = new HalfFace(faces.size(),currentNorm,e1);
                 faces.add(f);
-                HalfEdge e2 = new HalfEdge(lastEdge + 1, v3, null, f, e3,textures.get(Integer.parseInt(vertex3[1])-1));
-                HalfEdge e1 = new HalfEdge(lastEdge + 2, v2, null, f, e2,textures.get(Integer.parseInt(vertex2[1])-1));
-                e3.face = f;
-                e3.next = e1;
+                HalfEdge e3 = new HalfEdge(lastEdge + 2, v3, null, f, e1,textures.get(Integer.parseInt(vertex3[1])-1));
+                HalfEdge e2 = new HalfEdge(lastEdge + 1, v2, null, f, e3,textures.get(Integer.parseInt(vertex2[1])-1));
+                e1.face = f;
+                e1.next = e2;
 
-                edges.add(e3);
-                edges.add(e2);
                 edges.add(e1);
+                edges.add(e2);
+                edges.add(e3);
 
 //                v1.edge = e1;
 //                v2.edge = e2;
 //                v3.edge = e3;
 
-                v1.edge = e3;
-                v2.edge = e1;
-                v3.edge = e2;
+                v1.edge = e1;
+                v2.edge = e2;
+                v3.edge = e3;
 
-                halfedges.put(new Pair<>(vid1,vid2),e1);
-                halfedges.put(new Pair<>(vid2,vid3),e2);
-                halfedges.put(new Pair<>(vid3,vid1),e3);
+                halfedges.put(new Pair<>(vid1,vid3),e1);
+                halfedges.put(new Pair<>(vid2,vid1),e2);
+                halfedges.put(new Pair<>(vid3,vid2),e3);
 
-                if(halfedges.containsKey(new Pair<>(vid2,vid1))){
-                    HalfEdge e1_ = halfedges.get(new Pair<>(vid2,vid1));
+                if(halfedges.containsKey(new Pair<>(vid3,vid1))){
+                    HalfEdge e1_ = halfedges.get(new Pair<>(vid3,vid1));
                     e1.pair = e1_;
                     e1_.pair = e1;
                 }
-                if(halfedges.containsKey(new Pair<>(vid3,vid2))){
-                    HalfEdge e2_ = halfedges.get(new Pair<>(vid3,vid2));
+                if(halfedges.containsKey(new Pair<>(vid1,vid2))){
+                    HalfEdge e2_ = halfedges.get(new Pair<>(vid1,vid2));
                     e2.pair = e2_;
                     e2_.pair = e2;
                 }
-                if(halfedges.containsKey(new Pair<>(vid1,vid3))){
-                    HalfEdge e3_ = halfedges.get(new Pair<>(vid1,vid3));
+                if(halfedges.containsKey(new Pair<>(vid2,vid3))){
+                    HalfEdge e3_ = halfedges.get(new Pair<>(vid2,vid3));
                     e3.pair = e3_;
                     e3_.pair = e3;
                 }
@@ -363,6 +363,51 @@ public class Mesh {
                 continue;
             }
 
+            if(v.onCrease()) {
+
+                HalfEdge e0 = v.edge.toNextCrease();
+                HalfEdge e1 = e0.toNextCrease2();
+
+                if(e0 == null)
+                {
+                    System.out.println("Not possible");
+                }
+                if(e1 == null)
+                {
+                    e1 = e0;
+                }
+
+                Vector3f temp_pos = new Vector3f();
+                temp_pos.x = 6.0f * v.old_posn.x;
+                temp_pos.y = 6.0f * v.old_posn.y;
+                temp_pos.z = 6.0f * v.old_posn.z;
+
+                Vector3f.add(temp_pos,e0.previous().previous().vertex.old_posn,temp_pos);
+                Vector3f.add(temp_pos,e1.previous().previous().vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e0.previous2().vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e0.previous().vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e1.vertex.old_posn,temp_pos);
+//                Vector3f.add(temp_pos,e1.previous().previous().vertex.old_posn,temp_pos);
+
+                v.posn.x = 0.125f * temp_pos.x;
+                v.posn.y = 0.125f * temp_pos.y;
+                v.posn.z = 0.125f * temp_pos.z;
+
+                Vector2f temp_text = new Vector2f();
+                temp_text.x = 6.0f * v.edge.old_texture.x;
+                temp_text.y = 6.0f * v.edge.old_texture.y;
+
+                Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
+                Vector2f.add(temp_text,e1.previous().previous().vertex.edge.old_texture,temp_text);
+
+                v.edge.texture.x = 0.125f * temp_text.x;
+                v.edge.texture.y = 0.125f * temp_text.y;
+
+                continue;
+
+
+            }
+
 
             ArrayList<Vector3f> neighbours = new ArrayList<Vector3f>();
             ArrayList<Vector2f> textures = new ArrayList<Vector2f>();
@@ -432,13 +477,16 @@ public class Mesh {
             e.next = e_split;
             e_prev.next = e;
 
+            if(e_split.crease)
+                e.crease = true;
+
             if(e_split.pair == null || !split_edges.contains(e_split.pair.id))
             {
                 HalfVertex midpoint = new HalfVertex();
                 midpoint.id = m.vertices.size();
                 midpoint.edge = e;
 
-                if(e_split.pair != null)
+                if(e_split.pair != null && !e_split.crease)
                 {
 //                    HalfVertex opp1 = edges.get(e_split.id).next.vertex;
 //                    HalfVertex opp2 = edges.get(e_split.id).pair.next.vertex;
@@ -480,7 +528,7 @@ public class Mesh {
                 }
                 else
                 {
-                    System.out.println("Boundary Vertex");
+                    System.out.println("Boundary/Crease Vertex");
                     Vector3f.add(v_start.posn,v_end.posn,midpoint.posn);
                     midpoint.posn.x *= 0.5f;
                     midpoint.posn.y *= 0.5f;

@@ -51,12 +51,28 @@ public class MainGameLoop {
         MasterRenderer renderer = new MasterRenderer();
 
         Mesh mesh = new Mesh();
-//        mesh.loadFromFile("hua2");
+        mesh.loadFromFile("cube");
 //		mesh.loadFromFile("hollow_cube");
-		mesh.loadFromFile("spaceship2");
+//		mesh.loadFromFile("spaceship2");
 //		Mesh.subdivide(mesh);
+
+		// Creases
+//		mesh.edges.get(0).crease = true;
+//		mesh.edges.get(0).pair.crease = true;
+//		mesh.edges.get(1).crease = true;
+//		mesh.edges.get(1).pair.crease = true;
+//		mesh.edges.get(2).crease = true;
+//		mesh.edges.get(2).pair.crease = true;
+
+		int crease_list[] = {1,4,9,14};
+		for(int i:crease_list)
+		{
+			mesh.edges.get(i).crease = true;
+			mesh.edges.get(i).pair.crease = true;
+		}
+
 		RawModel meshModel = mesh.loadObjModel(loader);
-        TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
+        TexturedModel cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow1")));
         entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
 //		System.out.println("Faces: " + mesh.faces.size() + );
 
@@ -67,7 +83,7 @@ public class MainGameLoop {
 			{
 				Mesh.subdivide(mesh);
 				meshModel = mesh.loadObjModel(loader);
-				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow2")));
+				cubeModel = new TexturedModel(meshModel, new ModelTexture(loader.loadTexture("snow1")));
 				entities.clear();
 				entities.add(new Entity(cubeModel, new Vector3f(0,0,0),0,0,0,3));
 				System.out.println("Faces: " + mesh.faces.size() + ", Vertices: " + mesh.vertices.size() + ", Edges: " + mesh.edges.size());

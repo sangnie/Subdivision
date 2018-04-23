@@ -25,14 +25,23 @@ public class Camera {
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)){
 			position.x-=0.2f;
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
+		if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
 			position.y+=0.2f;
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
 			position.y-=0.2f;
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
 			yaw-=0.2f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+			yaw+=0.2f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_U)){
+			roll+=0.2f;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_J)){
+			roll-=0.2f;
 		}
 	}
 
