@@ -363,15 +363,15 @@ public class Mesh {
                 v.posn.y = 0.125f * temp_pos.y;
                 v.posn.z = 0.125f * temp_pos.z;
 
-                Vector2f temp_text = new Vector2f();
-                temp_text.x = 6.0f * v.edge.old_texture.x;
-                temp_text.y = 6.0f * v.edge.old_texture.y;
-
-                Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
-                Vector2f.add(temp_text,e1.next.vertex.edge.old_texture,temp_text);
-
-                v.edge.texture.x = 0.125f * temp_text.x;
-                v.edge.texture.y = 0.125f * temp_text.y;
+//                Vector2f temp_text = new Vector2f();
+//                temp_text.x = 6.0f * v.edge.old_texture.x;
+//                temp_text.y = 6.0f * v.edge.old_texture.y;
+//
+//                Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
+//                Vector2f.add(temp_text,e1.next.vertex.edge.old_texture,temp_text);
+//
+//                v.edge.texture.x = 0.125f * temp_text.x;
+//                v.edge.texture.y = 0.125f * temp_text.y;
 
                 continue;
             }
@@ -406,15 +406,15 @@ public class Mesh {
                 v.posn.y = 0.125f * temp_pos.y;
                 v.posn.z = 0.125f * temp_pos.z;
 
-                Vector2f temp_text = new Vector2f();
-                temp_text.x = 6.0f * v.edge.old_texture.x;
-                temp_text.y = 6.0f * v.edge.old_texture.y;
-
-                Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
-                Vector2f.add(temp_text,e1.previous().previous().vertex.edge.old_texture,temp_text);
-
-                v.edge.texture.x = 0.125f * temp_text.x;
-                v.edge.texture.y = 0.125f * temp_text.y;
+//                Vector2f temp_text = new Vector2f();
+//                temp_text.x = 6.0f * v.edge.old_texture.x;
+//                temp_text.y = 6.0f * v.edge.old_texture.y;
+//
+//                Vector2f.add(temp_text,e0.previous().previous().vertex.edge.old_texture,temp_text);
+//                Vector2f.add(temp_text,e1.previous().previous().vertex.edge.old_texture,temp_text);
+//
+//                v.edge.texture.x = 0.125f * temp_text.x;
+//                v.edge.texture.y = 0.125f * temp_text.y;
 
                 continue;
 
@@ -445,8 +445,8 @@ public class Mesh {
             v.posn.y = (1.0f - n*beta)*v.old_posn.y;
             v.posn.z = (1.0f - n*beta)*v.old_posn.z;
 
-            v.edge.texture.x = (1.0f - n*beta)*v.edge.old_texture.x;
-            v.edge.texture.y = (1.0f - n*beta)*v.edge.old_texture.y;
+//            v.edge.texture.x = (1.0f - n*beta)*v.edge.old_texture.x;
+//            v.edge.texture.y = (1.0f - n*beta)*v.edge.old_texture.y;
 
             for(int j = 0 ; j < neighbours.size() ; j++)
             {
@@ -457,11 +457,11 @@ public class Mesh {
                 temp.z = beta*neighbours.get(j).z;
                 Vector3f.add(v.posn,temp,v.posn);
 
-                Vector2f temp2 = new Vector2f();
-//                        textures.get(j);
-                temp2.x = beta*textures.get(j).x;
-                temp2.y = beta*textures.get(j).y;
-                Vector2f.add(v.edge.texture,temp2,v.edge.texture);
+//                Vector2f temp2 = new Vector2f();
+////                        textures.get(j);
+//                temp2.x = beta*textures.get(j).x;
+//                temp2.y = beta*textures.get(j).y;
+//                Vector2f.add(v.edge.texture,temp2,v.edge.texture);
             }
 //            System.out.println("&&&" + v.posn);
         }
@@ -528,15 +528,19 @@ public class Mesh {
                     pos2.z = 1.0f*pos2.z/8.0f;
                     Vector3f.add(pos1,pos2,midpoint.posn);
 
-                    Vector2f tex1 = new Vector2f();
-                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,tex1);
-                    tex1.x = 3.0f*tex1.x/8.0f;
-                    tex1.y = 3.0f*tex1.y/8.0f;
-                    Vector2f tex2 = new Vector2f();
-                    Vector2f.add(opp1.edge.texture,opp2.edge.texture,tex2);
-                    tex2.x = 1.0f*tex2.x/8.0f;
-                    tex2.y = 1.0f*tex2.y/8.0f;
-                    Vector2f.add(tex1,tex2,midpoint.edge.texture);
+//                    Vector2f tex1 = new Vector2f();
+//                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,tex1);
+//                    tex1.x = 3.0f*tex1.x/8.0f;
+//                    tex1.y = 3.0f*tex1.y/8.0f;
+//                    Vector2f tex2 = new Vector2f();
+//                    Vector2f.add(opp1.edge.texture,opp2.edge.texture,tex2);
+//                    tex2.x = 1.0f*tex2.x/8.0f;
+//                    tex2.y = 1.0f*tex2.y/8.0f;
+//                    Vector2f.add(tex1,tex2,midpoint.edge.texture);
+//                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,midpoint.edge.texture);
+                    Vector2f.add(e_split.texture,e_prev.texture,e.texture);
+                    e.texture.x *= 0.5f;
+                    e.texture.y *= 0.5f;
 
                 }
                 else
@@ -547,9 +551,13 @@ public class Mesh {
                     midpoint.posn.y *= 0.5f;
                     midpoint.posn.z *= 0.5f;
 
-                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,midpoint.edge.texture);
-                    midpoint.edge.texture.x *= 0.5f;
-                    midpoint.edge.texture.y *= 0.5f;
+//                    Vector2f.add(v_start.edge.texture,v_end.edge.texture,midpoint.edge.texture);
+//                    midpoint.edge.texture.x *= 0.5f;
+//                    midpoint.edge.texture.y *= 0.5f;
+
+                    Vector2f.add(e_split.texture,e_prev.texture,e.texture);
+                    e.texture.x *= 0.5f;
+                    e.texture.y *= 0.5f;
                 }
 
                 e.vertex = midpoint;
@@ -570,7 +578,11 @@ public class Mesh {
                 pair_prev.pair = e_split;
 
                 e.vertex = pair_prev.vertex;
-                e.texture = pair_prev.texture;
+//                e.texture = pair_prev.texture;
+//                Vector2f.add(v_start.edge.texture,v_end.edge.texture,e.texture);
+                Vector2f.add(e_prev.texture,e_split.texture,e.texture);
+                e.texture.x *= 0.5f;
+                e.texture.y *= 0.5f;
 
                 old_pair.pair = e;
                 e.pair = old_pair;
