@@ -146,14 +146,14 @@ public class Mesh {
             e.printStackTrace();
         }
 
-        int crease_list[] = {3,15,26,7,34,28,3};
-        for (int i = 0; i < crease_list.length - 1; i++) {
-            System.out.println(crease_list[i] + " " + crease_list[i+1]);
-//            System.out.println(halfedges.containsKey(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)));
-//            System.out.println(halfedges.containsKey(new Pair<>(crease_list[i+1],crease_list[i])));
-            halfedges.get(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)).crease = true;
-            halfedges.get(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)).pair.crease = true;
-        }
+//        int crease_list[] = {3,15,26,7,34,28,3};
+//        for (int i = 0; i < crease_list.length - 1; i++) {
+//            System.out.println(crease_list[i] + " " + crease_list[i+1]);
+////            System.out.println(halfedges.containsKey(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)));
+////            System.out.println(halfedges.containsKey(new Pair<>(crease_list[i+1],crease_list[i])));
+//            halfedges.get(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)).crease = true;
+//            halfedges.get(new Pair<>(crease_list[i]-1,crease_list[i+1]-1)).pair.crease = true;
+//        }
 
         System.out.println("Faces: " + faces.size() + ", Vertices: " + vertices.size() + ", Edges: " + edges.size());
 
@@ -246,28 +246,29 @@ public class Mesh {
     public static void subdivide(Mesh m){
 
         int evenverts = m.vertices.size();
-        System.out.println("@@@@@@@@@@@@@@@@@");
+//        System.out.println("@@@@@@@@@@@@@@@@@");
 
         subdivideEdges(m);
-        System.out.println("@@@@@@@@@@@@@@@@@");
+//        System.out.println("@@@@@@@@@@@@@@@@@");
 
         updateOriginal(m,evenverts);
-        System.out.println("@@@@@@@@@@@@@@@@@");
+//        System.out.println("@@@@@@@@@@@@@@@@@");
 
         splitFaces(m);
 
-        System.out.println("@@@@@@@@@@@@@@@@@");
+//        System.out.println("@@@@@@@@@@@@@@@@@");
 
         updateOlds(m);
 
-        System.out.println("@@@@@@@@@@@@@@@@@");
+//        System.out.println("@@@@@@@@@@@@@@@@@");
     }
 
-//    public void subdivide(int number){
-//        for (int i = 0; i < number; i++) {
-//            subdivide();
-//        }
-//    }
+    public void subdivide(int number){
+        for (int i = 0; i < number; i++) {
+            subdivide(this);
+            System.out.println("Faces: " + faces.size() + ", Vertices: " + vertices.size() + ", Edges: " + edges.size());
+        }
+    }
 
     public static void updateOlds(Mesh m)
     {
@@ -462,7 +463,7 @@ public class Mesh {
                 temp2.y = beta*textures.get(j).y;
                 Vector2f.add(v.edge.texture,temp2,v.edge.texture);
             }
-            System.out.println("&&&" + v.posn);
+//            System.out.println("&&&" + v.posn);
         }
     }
 
@@ -554,7 +555,7 @@ public class Mesh {
                 e.vertex = midpoint;
                 midpoint.edge.setOld_texture();
                 midpoint.setOld_posn();
-                System.out.println("###" + midpoint.posn);
+//                System.out.println("###" + midpoint.posn);
                 m.vertices.add(midpoint);
             }
             else
